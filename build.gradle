@@ -1,6 +1,7 @@
 buildscript {
     ext {
         springBootVersion = '1.2.7.RELEASE'
+        springRestDocsVersion = '1.0.0.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -11,8 +12,11 @@ buildscript {
     }
 }
 
+plugins {
+    id "org.asciidoctor.convert" version "1.5.2"
+}
+
 apply plugin: 'java'
-apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot' 
 apply plugin: 'io.spring.dependency-management' 
@@ -34,16 +38,35 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('com.h2database:h2')
     testCompile('org.springframework.boot:spring-boot-starter-test') 
-    testCompile('org.springframework.restdocs:spring-restdocs-mockmvc:1.0.0.RC1')
+    testCompile("org.springframework.restdocs:spring-restdocs-mockmvc:${springRestDocsVersion}")
+}
+
+ext {
+    snippetsDir = file('build/generated-snippets')
 }
 
 
-eclipse {
-    classpath {
-         containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
-         containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+test {
+    outputs.dir snippetsDir
+}
+
+
+asciidoctor {
+    attributes 'snippets': snippetsDir
+    inputs.dir snippetsDir
+    outputDir "build/asciidoc/html5"
+    dependsOn test
+    sourceDir 'src/main/asciidoc'
+}
+
+
+jar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
     }
 }
+
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.7'

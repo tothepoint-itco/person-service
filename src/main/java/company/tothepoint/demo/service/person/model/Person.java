@@ -22,14 +22,14 @@ public class Person {
 
     @NotNull
     @Size(min = 1, max = 50)
-    private String LastName;
+    private String lastName;
 
     public Person() {
     }
 
     public Person(String firstName, String lastName) {
         this.firstName = firstName;
-        LastName = lastName;
+        this.lastName = lastName;
     }
 
     public Long getId() {
@@ -49,10 +49,10 @@ public class Person {
     }
 
     public String getLastName() {
-        return LastName;
+        return lastName;
     }
 
     public void setLastName(String lastName) {
-        LastName = lastName;
+        this.lastName = lastName;
     }
 }
